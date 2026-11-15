@@ -133,22 +133,29 @@ Notebook executed top-to-bottom with my own Snowflake account (`SE21223`, role `
 
 Re-running the notebook 4 times (run_ids 115156, 115231, 115236, 115939) grew bronze by 8 rows per run (32 total) while gold stayed at 4 orders / ₹7,785.00 / 126 points — idempotency confirmed.
 
-**Actual Colab output (baseline run, `gold.fct_orders` + `ops.run_log`):**
+**Actual Colab output (baseline run):**
+
+`gold.fct_orders` after one baseline run:
 
 ```
-index,ORDER_ID,...   (4 gold rows)
 GOLD: 4 orders, revenue ₹7,785.00, 126 loyalty points
 ```
 
+`ops.run_log` execution steps (all succeeded):
+
 ```
-index,STEP,STATUS,DETAIL,...
+index,RUN_ID,SOURCE,ORDER_ID,...
 ...
-14,quality checks,success,1.2s; result='passed',...
-15,summary,success,4 orders, revenue ₹7,785.00, 126 loyalty points,...
+quality checks, success, 1.2s; result='passed'
+summary, success, 4 orders, revenue ₹7,785.00, 126 loyalty points
 ```
 
 All 7 quality checks passed (`result='passed'`), and the run log confirms every
 step from `load web orders` through `40 enrich + gold` succeeded.
+
+**Screenshots:**
+- `screenshots/ops.run_log.png` — `ops.run_log` DataFrame from Colab.
+- `screenshots/B-base_gold.png` — `gold.fct_orders` totals for baseline run.
 
 ---
 
@@ -182,7 +189,20 @@ IFF(currency NOT IN ('INR', 'USD'), 'unsupported_currency', NULL),
 ```
 
 - **ORD-1006 reasons before:** `['bad_email', 'bad_pincode']`
-- **ORD-1006 reasons after:** `['bad_email', 'bad_pincode', 'unsupported_currency']` *(from Colab re-run)*
+- **ORD-1006 reasons after:** `['bad_email', 'bad_pincode', 'unsupported_currency']`
+
+Confirmed in Colab with:
+```sql
+SELECT order_id, reasons FROM quarantine.orders WHERE order_id = 'ORD-1006'
+```
+which returned:
+```
+index,RUN_ID,SOURCE,ORDER_ID,REASONS
+0,20260930_135013,web,ORD-1006,"[""bad_email"", ""bad_pincode"", ""unsupported_currency""]"
+...
+```
+
+**Screenshot:** `screenshots/B3.png` — quarantine reasons for ORD-1006 showing the third reason added.
 - **Gold total change:** **No.** ORD-1006 was already quarantined before the change (bad email + bad pincode), so it never reached `silver.orders_clean`, the dedup layer, or the gold MERGE. Adding a third reason only enriches the quarantine record; the 4 gold rows / ₹7,785.00 / 126 points are untouched.
 - **Second quarantine row?** **No.** The deciding SQL is the `NOT EXISTS` guard in the quarantine `INSERT` in `sql/10_silver_orders_clean.sql`:
   ```sql
@@ -223,6 +243,24 @@ IFF(currency NOT IN ('INR', 'USD'), 'unsupported_currency', NULL),
 | Loyalty points for ORD-1002 | **70** (`FLOOR(3536.00 / 100) × 2`) |
 | Total loyalty points in gold | **161** (ORD-1001: 12 + ORD-1002: 70 + ORD-1003: 63 + ORD-1005: 16) |
 | Number of gold rows whose `published_at` changed | **1** (ORD-1002 row_hash updated; others identical) |
+
+Colab query outputs:
+
+```
+index,CUST_ID,EMAIL,TIER,VALID_FROM,VALID_TO,IS_CURRENT
+0,CUST-02,arjun.k@yahoo.in,Silver,2024-01-15,2026-08-14,false
+1,CUST-02,arjun.k@yahoo.in,Gold,2026-08-15,9999-12-31,true
+```
+
+```
+ORD-1002 	arjun.k@yahoo.in 	Gold 	70
+```
+
+```
+0 	4 	7785.00 	161
+```
+
+**Screenshot:** `screenshots/B-edited_gold.png` — edited run showing 4 orders / ₹7,785.00 / 161 loyalty points after adding CUST-02 CRM event.
 
 **Why gold is safe to re-run but bronze grows:** the gold `MERGE` in `sql/40_gold_fct_orders.sql` keys on `order_id` and compares a `row_hash` built from every output column (`HASH(order_date, cust_id, email, tier, multiplier, amount, currency, fx_rate, amount_inr, loyalty_points, is_high_value, city, state, region, updated_at)`). A re-run that produces identical rows leaves `row_hash` equal, so neither `WHEN MATCHED AND t.row_hash <> s.row_hash` nor `WHEN NOT MATCHED` fires — nothing doubles. Bronze, by contrast, is a raw landing table loaded with `COPY INTO ... OVERWRITE=FALSE`, which intentionally appends every extracted file (Snowflake remembers each file for 64 days, so re-extracting the same sample adds 8 fresh rows each run). Bronze is meant to be an append-only history; silver/gold are where deduplication and idempotent MERGE keep the business truth stable.
 
