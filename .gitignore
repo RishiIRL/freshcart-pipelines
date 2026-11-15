@@ -20,3 +20,9 @@ htmlcov/
 .vscode/
 .idea/
 .DS_Store
+# Mage runtime artifacts
+mage_ui.log
+mage_err.log
+mage_ui.pid
+.ssh_tunnel/
+*.pid
