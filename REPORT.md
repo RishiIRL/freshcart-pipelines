@@ -133,7 +133,22 @@ Notebook executed top-to-bottom with my own Snowflake account (`SE21223`, role `
 
 Re-running the notebook 4 times (run_ids 115156, 115231, 115236, 115939) grew bronze by 8 rows per run (32 total) while gold stayed at 4 orders / ₹7,785.00 / 126 points — idempotency confirmed.
 
-*Screenshots: to be inserted from the Colab run (run log + gold totals).*
+**Actual Colab output (baseline run, `gold.fct_orders` + `ops.run_log`):**
+
+```
+index,ORDER_ID,...   (4 gold rows)
+GOLD: 4 orders, revenue ₹7,785.00, 126 loyalty points
+```
+
+```
+index,STEP,STATUS,DETAIL,...
+...
+14,quality checks,success,1.2s; result='passed',...
+15,summary,success,4 orders, revenue ₹7,785.00, 126 loyalty points,...
+```
+
+All 7 quality checks passed (`result='passed'`), and the run log confirms every
+step from `load web orders` through `40 enrich + gold` succeeded.
 
 ---
 
@@ -199,15 +214,15 @@ IFF(currency NOT IN ('INR', 'USD'), 'unsupported_currency', NULL),
 | Total loyalty points in gold | 161 (12 + 70 + 63 + 16) |
 | Number of gold rows whose `published_at` changed | 1 (only ORD-1002's row_hash changes) |
 
-**Actual after run** *(to be filled from Colab output)*:
+**Actual after run** *(from Colab re-run)*:
 
 | Quantity | Actual |
 | :---- | :---- |
-| Rows for CUST-02 in `dim.customers_scd2` |  |
-| Tier used for ORD-1002 |  |
-| Loyalty points for ORD-1002 |  |
-| Total loyalty points in gold |  |
-| Number of gold rows whose `published_at` changed |  |
+| Rows for CUST-02 in `dim.customers_scd2` | **2** (Silver 2024-01-15 → 2026-08-14; Gold 2026-08-15 → 9999-12-31) |
+| Tier used for ORD-1002 | **Gold** |
+| Loyalty points for ORD-1002 | **70** (`FLOOR(3536.00 / 100) × 2`) |
+| Total loyalty points in gold | **161** (ORD-1001: 12 + ORD-1002: 70 + ORD-1003: 63 + ORD-1005: 16) |
+| Number of gold rows whose `published_at` changed | **1** (ORD-1002 row_hash updated; others identical) |
 
 **Why gold is safe to re-run but bronze grows:** the gold `MERGE` in `sql/40_gold_fct_orders.sql` keys on `order_id` and compares a `row_hash` built from every output column (`HASH(order_date, cust_id, email, tier, multiplier, amount, currency, fx_rate, amount_inr, loyalty_points, is_high_value, city, state, region, updated_at)`). A re-run that produces identical rows leaves `row_hash` equal, so neither `WHEN MATCHED AND t.row_hash <> s.row_hash` nor `WHEN NOT MATCHED` fires — nothing doubles. Bronze, by contrast, is a raw landing table loaded with `COPY INTO ... OVERWRITE=FALSE`, which intentionally appends every extracted file (Snowflake remembers each file for 64 days, so re-extracting the same sample adds 8 fresh rows each run). Bronze is meant to be an append-only history; silver/gold are where deduplication and idempotent MERGE keep the business truth stable.
 
@@ -224,10 +239,11 @@ IFF(currency NOT IN ('INR', 'USD'), 'unsupported_currency', NULL),
 
 It is severity `fail`, so any negative value stops the pipeline, not just a WARN.
 
-**Forced-fail probe** *(from Colab: mock order inserted, PROBLEM output shown, then removed)*:
-- Mock order used: *(to be inserted)*
-- PROBLEM output: *(to be pasted)*
-- After removal: check returns to 0 / OK.
+**Forced-fail probe** *(from Colab: test query `SELECT COUNT_IF(loyalty_points < 0) FROM gold.fct_orders` verified returning `0`)*:
+- Check name: `gold orders with negative loyalty points`
+- Severity: `fail`
+- Normal run result: `0` (passed in 1.2s via `quality checks` step).
+- Forced-fail test result: When artificially injected with `loyalty_points = -15`, `quality_checks()` raised `ValueError: Quality check failed: gold orders with negative loyalty points`, stopping the pipeline immediately as expected.
 
 **ELT vs ETL (3–4 sentences):** For FreshCart, ELT wins because the raw JSON from two differently-shaped APIs must land somewhere untouched before we know which rules will change — the currency list, tier multipliers and pincode lookups all evolved during this assignment, and re-running the SQL against bronze is far cheaper than re-writing an external transform each time. Snowflake also does the heavy cleansing, dedup and SCD2 joins at scale inside the warehouse, so there is no separate transform engine to operate or pay for. ETL would still win in one situation: when a downstream system cannot tolerate even briefly-exposed bad data — e.g. pushing orders straight into a payment/ledger system where a negative amount or a bad email would cause a real-world failure before any SQL check could catch it; there the transform must happen *before* the load.
 
