@@ -18,7 +18,7 @@ if 'test' not in globals():
 
 @transformer
 def transform(df, *args, **kwargs):
-    train, test = train_test_split(df, test_size=0.3, random_state=42)
+    train, test = train_test_split(df, test_size=0.2, random_state=42)
     train['split'] = 'train'
     test['split'] = 'test'
     return pd.concat([train, test])
