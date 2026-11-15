@@ -1,0 +1,97 @@
+WARNING:traitlets:Message signing is disabled.  This is insecure and not recommended!
+WARNING:traitlets:Message signing is disabled.  This is insecure and not recommended!
+DBT library not installed.
+INFO:mage_ai.server.scheduler_manager:Start scheduler.
+Initializing global job manager:  <mage_ai.orchestration.job_manager.JobManager object at 0x7f5bd38e56a0>
+INFO:mage_ai.server.active_kernel:Switch active kernel: python3
+INFO:mage_ai.server.server:Mage is running at http://localhost:6789 and serving project /home/glitch/Projects/Assignment/freshcart-pipelines/iris_project
+INFO:mage_ai.server.server:User authentication is enabled.
+[IPKernelApp] WARNING | Kernel is running over TCP without encryption. All communication (including code and outputs) is sent in plain text and is susceptible to eavesdropping. Use IPC transport or launch with kernel manager-provisioned CurveZMQ keys to enable transport encryption.
+WARNING:traitlets:Message signing is disabled.  This is insecure and not recommended!
+WARNING:traitlets:Message signing is disabled.  This is insecure and not recommended!
+DBT library not installed.
+INFO:alembic.runtime.migration:Context impl SQLiteImpl.
+INFO:alembic.runtime.migration:Will assume non-transactional DDL.
+INFO:mage_ai.orchestration.pipeline_scheduler_original:Active pipeline runs: []
+INFO:mage_ai.server.server:Initializing block cache.
+INFO:mage_ai.server.server:Initializing pipeline cache.
+INFO:tornado.access:304 GET / (127.0.0.1) 1.33ms
+INFO:tornado.access:200 GET / (::1) 1.66ms
+INFO:mage_ai.server.server:Initializing tag cache.
+INFO:mage_ai.server.server:Initializing block action object cache.
+INFO:mage_ai.orchestration.pipeline_scheduler_original:Active pipeline runs: []
+INFO:mage_ai.orchestration.pipeline_scheduler_original:Active pipeline runs: []
+INFO:mage_ai.orchestration.pipeline_scheduler_original:Active pipeline runs: []
+INFO:mage_ai.orchestration.pipeline_scheduler_original:Active pipeline runs: []
+INFO:mage_ai.orchestration.pipeline_scheduler_original:Active pipeline runs: []
+INFO:mage_ai.orchestration.pipeline_scheduler_original:Active pipeline runs: []
+INFO:mage_ai.orchestration.pipeline_scheduler_original:Active pipeline runs: []
+INFO:mage_ai.orchestration.pipeline_scheduler_original:Active pipeline runs: []
+INFO:mage_ai.orchestration.pipeline_scheduler_original:Active pipeline runs: []
+INFO:mage_ai.orchestration.pipeline_scheduler_original:Active pipeline runs: []
+INFO:mage_ai.orchestration.pipeline_scheduler_original:Active pipeline runs: []
+INFO:mage_ai.orchestration.pipeline_scheduler_original:Active pipeline runs: []
+INFO:mage_ai.orchestration.pipeline_scheduler_original:Active pipeline runs: []
+INFO:mage_ai.orchestration.pipeline_scheduler_original:Active pipeline runs: []
+INFO:mage_ai.orchestration.pipeline_scheduler_original:Active pipeline runs: []
+INFO:mage_ai.orchestration.pipeline_scheduler_original:Active pipeline runs: []
+INFO:mage_ai.orchestration.pipeline_scheduler_original:Active pipeline runs: []
+INFO:mage_ai.orchestration.pipeline_scheduler_original:Active pipeline runs: []
+INFO:mage_ai.orchestration.pipeline_scheduler_original:Active pipeline runs: []
+INFO:mage_ai.orchestration.pipeline_scheduler_original:Active pipeline runs: []
+INFO:mage_ai.orchestration.pipeline_scheduler_original:Active pipeline runs: []
+INFO:mage_ai.orchestration.pipeline_scheduler_original:Active pipeline runs: []
+INFO:mage_ai.orchestration.pipeline_scheduler_original:Active pipeline runs: []
+INFO:mage_ai.orchestration.pipeline_scheduler_original:Active pipeline runs: []
+INFO:mage_ai.orchestration.pipeline_scheduler_original:Active pipeline runs: []
+INFO:mage_ai.orchestration.pipeline_scheduler_original:Active pipeline runs: []
+INFO:mage_ai.orchestration.pipeline_scheduler_original:Active pipeline runs: []
+INFO:mage_ai.orchestration.pipeline_scheduler_original:Active pipeline runs: []
+INFO:mage_ai.orchestration.pipeline_scheduler_original:Active pipeline runs: []
+INFO:mage_ai.orchestration.pipeline_scheduler_original:Active pipeline runs: []
+INFO:mage_ai.orchestration.pipeline_scheduler_original:Active pipeline runs: []
+INFO:mage_ai.orchestration.pipeline_scheduler_original:Active pipeline runs: []
+INFO:mage_ai.orchestration.pipeline_scheduler_original:Active pipeline runs: []
+INFO:mage_ai.orchestration.pipeline_scheduler_original:Active pipeline runs: []
+INFO:mage_ai.orchestration.pipeline_scheduler_original:Active pipeline runs: []
+INFO:mage_ai.orchestration.pipeline_scheduler_original:Active pipeline runs: []
+INFO:mage_ai.orchestration.pipeline_scheduler_original:Active pipeline runs: []
+INFO:mage_ai.orchestration.pipeline_scheduler_original:Active pipeline runs: []
+INFO:mage_ai.orchestration.pipeline_scheduler_original:Active pipeline runs: []
+INFO:mage_ai.orchestration.pipeline_scheduler_original:Active pipeline runs: []
+INFO:mage_ai.orchestration.pipeline_scheduler_original:Active pipeline runs: []
+INFO:mage_ai.orchestration.pipeline_scheduler_original:Active pipeline runs: []
+INFO:mage_ai.orchestration.pipeline_scheduler_original:Active pipeline runs: []
+INFO:mage_ai.orchestration.pipeline_scheduler_original:Active pipeline runs: []
+INFO:mage_ai.orchestration.pipeline_scheduler_original:Active pipeline runs: []
+INFO:mage_ai.orchestration.pipeline_scheduler_original:Active pipeline runs: []
+INFO:mage_ai.orchestration.pipeline_scheduler_original:Active pipeline runs: []
+INFO:mage_ai.orchestration.pipeline_scheduler_original:Active pipeline runs: []
+INFO:mage_ai.orchestration.pipeline_scheduler_original:Active pipeline runs: []
+INFO:mage_ai.orchestration.pipeline_scheduler_original:Active pipeline runs: []
+INFO:mage_ai.orchestration.pipeline_scheduler_original:Active pipeline runs: []
+INFO:mage_ai.orchestration.pipeline_scheduler_original:Active pipeline runs: []
+INFO:mage_ai.orchestration.pipeline_scheduler_original:Active pipeline runs: []
+INFO:mage_ai.orchestration.pipeline_scheduler_original:Active pipeline runs: []
+INFO:mage_ai.orchestration.pipeline_scheduler_original:Active pipeline runs: []
+INFO:mage_ai.orchestration.pipeline_scheduler_original:Active pipeline runs: []
+INFO:mage_ai.orchestration.pipeline_scheduler_original:Active pipeline runs: []
+INFO:mage_ai.orchestration.pipeline_scheduler_original:Active pipeline runs: []
+INFO:mage_ai.orchestration.pipeline_scheduler_original:Active pipeline runs: []
+INFO:mage_ai.orchestration.pipeline_scheduler_original:Active pipeline runs: []
+INFO:mage_ai.orchestration.pipeline_scheduler_original:Active pipeline runs: []
+INFO:mage_ai.orchestration.pipeline_scheduler_original:Active pipeline runs: []
+INFO:mage_ai.orchestration.pipeline_scheduler_original:Active pipeline runs: []
+INFO:mage_ai.orchestration.pipeline_scheduler_original:Active pipeline runs: []
+INFO:mage_ai.orchestration.pipeline_scheduler_original:Active pipeline runs: []
+INFO:mage_ai.orchestration.pipeline_scheduler_original:Active pipeline runs: []
+INFO:mage_ai.orchestration.pipeline_scheduler_original:Active pipeline runs: []
+INFO:mage_ai.orchestration.pipeline_scheduler_original:Active pipeline runs: []
+INFO:mage_ai.orchestration.pipeline_scheduler_original:Active pipeline runs: []
+INFO:mage_ai.orchestration.pipeline_scheduler_original:Active pipeline runs: []
+INFO:mage_ai.orchestration.pipeline_scheduler_original:Active pipeline runs: []
+INFO:mage_ai.orchestration.pipeline_scheduler_original:Active pipeline runs: []
+INFO:mage_ai.orchestration.pipeline_scheduler_original:Active pipeline runs: []
+/usr/lib/python3.14/multiprocessing/resource_tracker.py:475: UserWarning: resource_tracker: There appear to be 6 leaked semaphore objects to clean up at shutdown: {'/loky-90266-wb4b1gej', '/loky-90266-nw2qtihw', '/loky-90351-sl5m7_ef', '/loky-90351-5wx8kzsc', '/loky-90266-q57z7xdg', '/loky-90351-94091l9e'}
+  warnings.warn(
+[IPKernelApp] WARNING | Parent appears to have exited, shutting down.

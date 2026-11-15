@@ -1,0 +1,63 @@
+name: iris_classifier
+type: python
+blocks:
+- name: load_iris
+  uuid: load_iris
+  type: data_loader
+  upstream_blocks: []
+  downstream_blocks:
+  - validate_iris
+  executor_config: null
+  language: python
+  file_path: data_loaders/load_iris.py
+- name: validate_iris
+  uuid: validate_iris
+  type: transformer
+  upstream_blocks:
+  - load_iris
+  downstream_blocks:
+  - prepare_data
+  executor_config: null
+  language: python
+  file_path: transformers/validate_iris.py
+- name: prepare_data
+  uuid: prepare_data
+  type: transformer
+  upstream_blocks:
+  - validate_iris
+  downstream_blocks:
+  - train_model
+  executor_config: null
+  language: python
+  file_path: transformers/prepare_data.py
+- name: train_model
+  uuid: train_model
+  type: transformer
+  upstream_blocks:
+  - prepare_data
+  downstream_blocks:
+  - save_results
+  - evaluate_model
+  executor_config: null
+  language: python
+  file_path: transformers/train_model.py
+  runtime_arguments:
+    max_depth: 3
+- name: evaluate_model
+  uuid: evaluate_model
+  type: transformer
+  upstream_blocks:
+  - train_model
+  downstream_blocks: []
+  executor_config: null
+  language: python
+  file_path: transformers/evaluate_model.py
+- name: save_results
+  uuid: save_results
+  type: data_exporter
+  upstream_blocks:
+  - train_model
+  downstream_blocks: []
+  executor_config: null
+  language: python
+  file_path: data_exporters/save_results.py
