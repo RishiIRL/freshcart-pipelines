@@ -1,0 +1,14 @@
+# Environment
+.env
+.env.*
+
+# Python artifacts
+*.pkl
+*.csv
+mage.log
+__pycache__/
+
+# IDE / OS
+.vscode/
+.idea/
+.DS_Store
