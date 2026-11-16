@@ -620,16 +620,86 @@ All 6 stream tests pass locally and in GitHub Actions CI (run `43754966114`).
 
 ## 6. Part E — Report Summary (10 marks)
 
-*Pending — requires RabbitMQ broker.*
+1. **Answers to every question in Parts A–D** are fully documented in the preceding sections, including:
+   - Git repository structure and commit history (Part A)
+   - CI/CD workflow with green and red test runs (Part A)
+   - ELT baseline and validation rule implementation (Part B)
+   - Mage pipeline block graph, test-gate experiments, and evaluation branch (Part C)
+   - RabbitMQ routing table, dispatcher/driver implementation, and ACK/NACK handling (Part D)
+
+2. **Integration Diagram** (Mermaid):
+```mermaid
+graph LR
+    Git[Git Repository] --> CI[CI/CD (GitHub Actions)]
+    CI --> ELT[ELT Pipeline (Snowflake)]
+    ELT --> Gold[Gold Data (fct_orders)]
+    CI --> ML[ML Pipeline (Mage)]
+    ML --> Model[Trained Model]
+    ELT --> Stream[RabbitMQ Stream]
+    Stream --> Dispatcher[Dispatcher (stream/dispatcher.py)]
+    Dispatcher --> Drivers[Drivers (stream/driver.py)]
+    Gold --> Model
+```
+
+3. **Reflection**:  
+> During the implementation of Part D, the test suite initially failed with `TypeError: tuple indices must be integers or slices, not str` in `test_dispatcher_main_publishes_11_messages`. Upon inspection, we discovered that the mock data structure returned by `unittest.mock` was a list of tuples `(routing_key, message)`, but the test was incorrectly trying to index it as a dictionary. This caused the assertion to fail because `rk_10 = publish_calls[9]` was a string (the routing key) instead of a tuple. We resolved this by updating the test to correctly unpack each tuple into `rk_10, msg_10 = publish_calls[9]` and `rk_1, msg_1 = publish_calls[0]`, allowing proper dictionary indexing. This fix ensured the test passed and validated that the dispatcher correctly publishes messages with the expected routing keys and message structures.
 
 ---
 
 ## 7. Bonus (10 marks)
 
-*Optional.*
+### Stream-to-Lakehouse Idempotency Simulation (`bonus/stream_to_lakehouse.py`)
+
+To solve the stream-to-lakehouse idempotency challenge, we implemented a robust simulation script (`bonus/stream_to_lakehouse.py`) that bridges real-time event streaming with batch data lakehouse storage.
+
+**Architecture & Mechanism:**
+1. **Stream Landing (`raw_landing.jsonl`)**: Simulates a 1-minute window of FreshCart orders (60 events), appending them to a raw landing zone with `tqdm` progress tracking.
+2. **Idempotent Batch Ingestion**: Reads the raw landing file, sorts by `event_timestamp`, and deduplicates using `order_id` as the natural business key (`drop_duplicates(subset=['order_id'], keep='last')`).
+3. **Upsert / Overwrite Semantics**: Writes the curated dataset to `curated_orders.csv`. If the batch job is re-run multiple times over the exact same raw landing records, the deterministic deduplication ensures that rows and financial totals do not duplicate.
+
+**Execution & Verification Output:**
+```text
+==================================================
+ FreshCart Stream-to-Lakehouse Idempotency Demo 
+==================================================
+[*] Simulating 60 events from FreshCart order stream...
+Streaming Events: 100%|████████████████████████████████████████████████████████████████████████████████| 60/60 [00:00<00:00, 98.34evt/s]
+[+] Stream simulation complete. Generated 60 events in 0.61s.
+[*] Writing raw events to landing zone: /home/glitch/Projects/Assignment/freshcart-pipelines/bonus/raw_landing.jsonl
+[+] Raw landing write complete.
+
+--- BATCH RUN 1 (Initial Ingestion) ---
+[*] Starting batch ingestion job from /home/glitch/Projects/Assignment/freshcart-pipelines/bonus/raw_landing.jsonl...
+Reading Raw Records: 100%|████████████████████████████████████████████████████████████████████████| 60/60 [00:00<00:00, 180529.58line/s]
+[+] Read 60 raw records.
+[*] Transforming and deduplicating records (idempotency key: order_id)...
+[+] Curated lakehouse write complete: /home/glitch/Projects/Assignment/freshcart-pipelines/bonus/curated_orders.csv (60 unique rows) in 0.02s.
+Run 1 Row Count: 60 | Total Amount: 21125.00
+
+--- BATCH RUN 2 (Idempotency Proof Run) ---
+[*] Starting batch ingestion job from /home/glitch/Projects/Assignment/freshcart-pipelines/bonus/raw_landing.jsonl...
+Reading Raw Records: 100%|████████████████████████████████████████████████████████████████████████| 60/60 [00:00<00:00, 154296.90line/s]
+[+] Read 60 raw records.
+[*] Transforming and deduplicating records (idempotency key: order_id)...
+[+] Curated lakehouse write complete: /home/glitch/Projects/Assignment/freshcart-pipelines/bonus/curated_orders.csv (60 unique rows) in 0.01s.
+Run 2 Row Count: 60 | Total Amount: 21125.00
+
+--- IDEMPOTENCY VERIFICATION ---
+✅ SUCCESS: Run 1 and Run 2 produce identical row counts and total amounts!
+   Idempotency verified: re-running batch ingestion over landing data does not double totals.
+==================================================
+```
 
 ---
 
 ## 8. Conclusion
 
-Part A is fully implemented and validated with CI/CD and pytest. Ready for Part B.
+All five parts of the "From Git to Gold" assignment are fully implemented and validated:
+- **Part A**: Git repository with structured commits, GitHub Actions CI/CD, and comprehensive pytest suite (7/7 tests passing).
+- **Part B**: Snowflake ELT pipeline with baseline and validation-rule transformations.
+- **Part C**: Mage ML pipeline with data quality gates, hyperparameter experiments, and evaluation branch.
+- **Part D**: RabbitMQ event streaming system with topic exchange routing, dispatcher, and ACK/NACK handling.
+- **Part E**: Complete report with integration diagram and reflection.
+- **Bonus**: Stream-to-lakehouse idempotency proof.
+
+The project demonstrates a production-ready data engineering stack covering version control, continuous integration, cloud data warehousing, machine learning operations, and real-time event streaming.
